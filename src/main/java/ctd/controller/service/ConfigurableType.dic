@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dic name="配置类别">
+	<item key="USER" text="用户信息"/>
+	<item key="ROLE" text="角色信息"/>
+	<item key="SCHEMA" text="数据模型"/>
+	<item key="DICTIONARY" text="字典信息"/>
+	<item key="APPLICATION" text="应用配置"/>
+	<item key="CATEGORYNODE" text="权限文件"/>
+</dic>

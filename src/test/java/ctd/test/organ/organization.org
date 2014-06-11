@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organ id="U01" name="杭州茶风暴奶茶连锁" type="Organ">
+	<installedApps>
+		<app id="app.chis"/>
+	</installedApps>
+	<unit id="U01.01" name="杭州店" type="Area">
+		<properties>
+			<p name="icon">area.png</p>
+		</properties>
+		<unit id="U01.01.001" name="文一店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.01.002" name="保淑路店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.01.003" name="武林路店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.01.004" name="延安路店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.01.005" name="解放路店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.01.006" name="城站店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+	</unit>
+	<unit id="U01.02" name="上海店" type="Area">
+		<properties>
+			<p name="icon">area.png</p>
+		</properties>
+		<unit id="U01.02.001" name="人民广场店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+		<unit id="U01.02.002" name="浦东店" type="RetailStore">
+			<properties>
+				<p name="address"></p>
+				<p name="phone"></p>
+				<p name="printPort">COM1</p>
+			</properties>
+		</unit>
+	</unit>
+</organ>
