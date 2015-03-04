@@ -22,6 +22,7 @@ public class SchemaItem implements Serializable{
 	private String schemaId;
 	private String id;
 	private String alias;
+	private int index;
 	private Boolean updatable;
 	private Boolean isVirtual;
 	private Boolean isRequired;
@@ -65,6 +66,14 @@ public class SchemaItem implements Serializable{
 		this.alias = alias;
 	}
 	
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	public Boolean isCodedValue(){
 		return !(dic == null);
 	}
@@ -240,7 +249,11 @@ public class SchemaItem implements Serializable{
 	
 	public int getMode(){
 		ResourceNode node = Repository.getNode(schemaId,id);
-		String principal = UserRoleToken.getCurrent().getRoleId();
+		UserRoleToken ur = UserRoleToken.getCurrent();
+		if(ur == null){
+			return Mode.NoneAccessMode.getValue();
+		}
+		String principal = ur.getRoleId();
 		return node.lookupPermission(principal).getMode().getValue();
 	}
 

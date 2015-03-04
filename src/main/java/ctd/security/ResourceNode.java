@@ -1,16 +1,17 @@
 package ctd.security;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceNode implements Serializable{
 	private static final long serialVersionUID = -5756434318986493239L;
 
 	protected String id;
-	protected ConcurrentHashMap<String,Permission> permissions = new ConcurrentHashMap<String,Permission>();
+	protected Map<String,Permission> permissions = new ConcurrentHashMap<String,Permission>();
 	
 	protected ResourceNode parent;
-	protected ConcurrentHashMap<String,ResourceNode> childNodes;
+	protected Map<String,ResourceNode> childNodes;
 	
 	public ResourceNode(String id){
 		this.id = id;

@@ -18,8 +18,12 @@ public interface Dictionary extends Configurable{
 	
 	public String getText(String key);
 	
+	public String getText(Object key);
+	
 	public List<DictionaryItem> getSlice(String parentKey,int sliceType,String query);
 	
 	public boolean isReloadable();
+	
+	public void destory();
 
 }

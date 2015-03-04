@@ -1,0 +1,5 @@
+public @{returnType} @{funcName}(){
+	@if{updatable}if(($w)@{fieldName} != null){return ($r)@{fieldName};}@end{}
+	@{fieldName}=($r)ExpressionProcessor.instance().run("@{exprStr}");
+	return ($r)@{fieldName};	
+}

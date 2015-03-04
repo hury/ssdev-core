@@ -10,7 +10,6 @@ import ctd.account.user.UserController;
 import ctd.app.ApplicationController;
 import ctd.controller.Configurable;
 import ctd.controller.Controller;
-import ctd.controller.notifier.ConfigurableNotifier;
 import ctd.dictionary.DictionaryController;
 import ctd.schema.SchemaController;
 import ctd.security.CategoryNodeController;
@@ -65,32 +64,5 @@ public class ControllerManagerService {
 		return rs;
 	}
 	
-	@RpcService
-	public void reloadAll(ConfigurableType type){
-		Controller<?> c = getController(type);
-		if(c != null){
-			ConfigurableNotifier notifier =c.getNotifier();
-			if(notifier != null){
-				notifier.notifyReloadAll();
-			}
-			else{
-				c.reloadAll();
-			}
-		}
-	}
 	
-	@RpcService
-	public void reload(ConfigurableType type,String id){
-		Controller<?> c = getController(type);
-		
-		if(c != null){
-			ConfigurableNotifier notifier = c.getNotifier();
-			if(notifier != null){
-				notifier.notifyReload(id);
-			}
-			else{
-				c.reload(id);
-			}
-		}
-	}
 }

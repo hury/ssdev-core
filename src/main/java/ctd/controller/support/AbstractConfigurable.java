@@ -1,6 +1,7 @@
 package ctd.controller.support;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import ctd.controller.Configurable;
 import ctd.controller.exception.ControllerException;
@@ -11,7 +12,7 @@ public abstract class AbstractConfigurable implements Configurable {
 	protected Long lastModi;
 	protected String id;
 	protected String name;
-	protected HashMap<String,Object> properties;
+	protected Map<String,Object> properties;
 	
 	@Override
 	public String getId() {
@@ -56,7 +57,7 @@ public abstract class AbstractConfigurable implements Configurable {
 	
 
 	@Override
-	public HashMap<String,Object> getProperties(){
+	public Map<String,Object> getProperties(){
 		if(properties == null || properties.size() == 0){
 			return null;
 		}
@@ -77,6 +78,8 @@ public abstract class AbstractConfigurable implements Configurable {
 		return true;
 	}
 	
-	public void init() throws ControllerException{};
+	public void init() throws ControllerException{
+		
+	};
 
 }

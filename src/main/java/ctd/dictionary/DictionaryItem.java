@@ -2,26 +2,46 @@ package ctd.dictionary;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
+import ctd.util.PyConverter;
 import ctd.util.converter.ConversionUtils;
 
 public class DictionaryItem implements Serializable{
 	private static final long serialVersionUID = -2624948204291546508L;
+
 	private String key;
 	private String text;
 	private String mCode;
 	private boolean leaf;
 	private String parent;
 	private int index;
-	private HashMap<String,Object> properties;
+	private Map<String,Object> properties;
 	
 	public DictionaryItem(){
 		
 	}
 	
-	public DictionaryItem(String key,String text){
-		this.setKey(key);
+	public DictionaryItem(Object key,String text){
+		this.setKey(String.valueOf(key));
 		this.setText(text);
+		leaf = true;
+		mCode = PyConverter.getFirstLetter(text);
+	}
+	
+	public DictionaryItem(Object key,String text,Map<String,Object> properties){
+		this(key,text);
+		this.properties = properties;
+	}
+	
+	public DictionaryItem(Object key,String text,String parent){
+		this(key,text);
+		this.parent = parent;
+	}
+	
+	public DictionaryItem(Object key,String text,String parent,String mCode){
+		this(key,text,parent);
+		this.mCode = mCode;
 	}
 	
 	public void setProperty(String nm,Object v){
@@ -52,14 +72,14 @@ public class DictionaryItem implements Serializable{
 		return ConversionUtils.convert(properties.get(nm),t);
 	}
 	
-	public HashMap<String,Object> getProperties(){
+	public Map<String,Object> getProperties(){
 		if(properties != null && properties.isEmpty()){
 			return null;
 		}
 		return properties;
 	}
 	
-	public void setProperties( HashMap<String,Object> properties){
+	public void setProperties(Map<String,Object> properties){
 		this.properties = properties;
 	}
 	

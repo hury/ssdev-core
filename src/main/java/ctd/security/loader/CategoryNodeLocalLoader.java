@@ -5,10 +5,8 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import ctd.controller.Configurable;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.AbstractConfigurableLoader;
-import ctd.schema.constants.DataTypes;
 import ctd.security.CategoryNode;
 import ctd.security.Condition;
 import ctd.security.ConditionFactory;
@@ -57,16 +55,6 @@ public class CategoryNodeLocalLoader extends AbstractConfigurableLoader<Category
 				parent.appendChild(child);
 				parseChilds(child,c);
 			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void setupProperties(Configurable o,Element el){
-		List<Element> ls = el.selectNodes("properties/p");
-		for(Element p : ls){
-			String type = p.attributeValue("type","string");
-			Object v = DataTypes.toTypeValue(type, p.getTextTrim());
-			o.setProperty(p.attributeValue("name"), v);
 		}
 	}
 	

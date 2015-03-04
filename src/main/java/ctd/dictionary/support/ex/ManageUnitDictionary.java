@@ -218,6 +218,15 @@ public class ManageUnitDictionary extends AbstractConfigurable implements Dictio
 		return false;
 	}
 
+	@Override
+	public String getText(Object key) {
+		return getText(String.valueOf(key));
+	}
+
+	@Override
+	public void destory() {
+	}
+
 	
 
 }

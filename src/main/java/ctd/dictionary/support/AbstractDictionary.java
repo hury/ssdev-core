@@ -1,9 +1,10 @@
 package ctd.dictionary.support;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang3.StringUtils;
 
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.AbstractConfigurable;
@@ -12,11 +13,10 @@ import ctd.dictionary.DictionaryItem;
 
 public abstract class AbstractDictionary extends AbstractConfigurable implements Dictionary{
 	private static final long serialVersionUID = 5186888641454350567L;
-	protected Map<String,DictionaryItem> items = new HashMap<>();
+	protected Map<String,DictionaryItem> items = new ConcurrentHashMap<>();
 	protected Map<String,Object> properties = new ConcurrentHashMap<>();
 	protected String searchField = "mCode";
 	protected String searchFieldEx = "text";
-	protected String id;
 	protected boolean inited = true;
 	protected boolean reloadable = true;
 	
@@ -66,10 +66,14 @@ public abstract class AbstractDictionary extends AbstractConfigurable implements
 	}
 	
 	public String getText(String key){
-		if(items.containsKey(key)){
+		if(!StringUtils.isEmpty(key) && items.containsKey(key)){
 			return items.get(key).getText();
 		}
 		return "";
+	}
+	
+	public String getText(Object key){
+		return getText(String.valueOf(key));
 	}
 	
 	public String getSearchField() {
@@ -119,4 +123,9 @@ public abstract class AbstractDictionary extends AbstractConfigurable implements
 	public boolean isReloadable(){
 		return reloadable;
 	}
+	
+	public void destory(){
+		items.clear();
+		properties.clear();
+	};
 }

@@ -8,16 +8,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 
-import ctd.controller.Configurable;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.TenantSupportConfiguableLoader;
 import ctd.dictionary.Dictionary;
 import ctd.dictionary.DictionaryItem;
-import ctd.dictionary.support.DatabaseDictionary;
+import ctd.dictionary.support.LoadingXMLDictionary;
 import ctd.dictionary.support.XMLDictionary;
-import ctd.dictionary.support.databse.DBDictionaryInfo;
-import ctd.dictionary.support.databse.DBDictionaryItemLoader;
-import ctd.dictionary.support.databse.DBDictionaryItemLoaderFactory;
+import ctd.util.AppContextHolder;
 import ctd.util.PyConverter;
 import ctd.util.converter.ConversionUtils;
 
@@ -36,15 +33,12 @@ public class DictionaryLocalLoader extends TenantSupportConfiguableLoader<Dictio
 		if(root == null){
 			throw new ControllerException(ControllerException.PARSE_ERROR,"root element missing.");
 		}
-		String className = root.attributeValue("class","XMLDictionary");
-		
 		try {
-
-			Dictionary dic = null;
-			
-			if(className.equals("XMLDictionary")){
+			String clz = root.attributeValue("class");
+			XMLDictionary dic = null;
+			if(StringUtils.isEmpty(clz)){
 				dic = new XMLDictionary();
-				((XMLDictionary)dic).setDefineDoc(doc);
+				dic.setDefineDoc(doc);
 				List<Element> els = root.selectNodes("//item");
 				for(Element el : els){
 					DictionaryItem item = ConversionUtils.convert(el, DictionaryItem.class);
@@ -63,35 +57,26 @@ public class DictionaryLocalLoader extends TenantSupportConfiguableLoader<Dictio
 					dic.addItem(item);
 				}
 			}
-			else if(className.equals("DatabaseDictionary")){
-				dic = new DatabaseDictionary();
-				DBDictionaryInfo info = ConversionUtils.convert(root, DBDictionaryInfo.class);
-				
-				String loaderClassName = root.attributeValue("loaderClass", "ctd.dictionary.support.databse.HibernateSupportDictionaryItemLoader");
-				DBDictionaryItemLoader loader = DBDictionaryItemLoaderFactory.createLoader(loaderClassName, info);
-				((DatabaseDictionary)dic).setLoader(loader);
-			}
 			else{
-				throw new IllegalStateException("dictionary class[" + className + "] is not support.");
+				dic = (LoadingXMLDictionary) Class.forName(clz).newInstance();
+				String loaderBeanId = root.attributeValue("loader");
+				if(StringUtils.isEmpty(loaderBeanId)){
+					throw new IllegalStateException("loadingDictionary[" + id + "] loader not setup.");
+				}
+				DictionaryItemLoader loader = AppContextHolder.getBean(loaderBeanId,DictionaryItemLoader.class);
+				((LoadingXMLDictionary)dic).setLoader(loader);
 			}
-
-			dic.setId(id);
+			
 			dic.setName(root.attributeValue("name",id));
-			dic.setLastModify(lastModi);
 			setupProperties(dic,root);
+			dic.setId(id);
+			dic.setLastModify(lastModi);
 			return dic;
 		} 
 		catch (Exception e){
-			throw new ControllerException(e,ControllerException.PARSE_ERROR,"dictionary[" + id + "] class[" + className + "] init unknow error:"+ e.getMessage());
+			throw new ControllerException(e,ControllerException.PARSE_ERROR,"dictionary[" + id + "] init unknow error:"+ e.getMessage());
 		}
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void setupProperties(Configurable o,Element el){
-		List<Element> ls = el.selectNodes("properties/p");
-		for(Element p : ls){
-			o.setProperty(p.attributeValue("name"), p.getTextTrim());
-		}
-	}
 }

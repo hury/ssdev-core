@@ -4,12 +4,22 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import ctd.account.AccountCenter;
 import ctd.account.UserRoleToken;
 import ctd.account.tenant.TenantController;
 import ctd.controller.exception.ControllerException;
 import ctd.util.converter.ConversionUtils;
 
+@Entity
+@Table(name = "BASE_UserRoles")
+@Access(AccessType.PROPERTY)
 public class UserRoleTokenEntity extends UserRoleToken{
 	private static final long serialVersionUID = 258173847713519333L;
 	protected Map<String,Object> properties;
@@ -21,11 +31,14 @@ public class UserRoleTokenEntity extends UserRoleToken{
 	private String manageUnit;
 	private Date lastLoginTime;
 	private String lastIPAddress;
+	private String lastUserAgent;
 	
+	@Id
 	public Integer getId() {
 		return id;
 	}
 	
+	@Transient
 	public String getDisplayName(){
 		StringBuilder sb = new StringBuilder(getTenantName());
 		String manageUnitId = getManageUnit();
@@ -45,6 +58,7 @@ public class UserRoleTokenEntity extends UserRoleToken{
 		return userId;
 	}
 	
+	@Transient
 	public String getUserName(){
 		try {
 			return AccountCenter.getUser(userId).getName();
@@ -53,11 +67,22 @@ public class UserRoleTokenEntity extends UserRoleToken{
 			return null;
 		}
 	}
+	
+	@Transient
+	public Integer getUserAvatar(){
+		try {
+			return AccountCenter.getUser(userId).getAvatarFileId();
+		} 
+		catch (ControllerException e) {
+			return 0;
+		}
+	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	
+	@Transient
 	public String getRoleName(){
 		try {
 			return AccountCenter.getRole(roleId).getName();
@@ -92,6 +117,7 @@ public class UserRoleTokenEntity extends UserRoleToken{
 		return tenantId;
 	}
 	
+	@Transient
 	public String getTenantName(){
 		String tenantId = getTenantId();
 		try {
@@ -111,6 +137,7 @@ public class UserRoleTokenEntity extends UserRoleToken{
 		return manageUnit;
 	}
 	
+	@Transient
 	public String getManageUnitName(){
 		try {
 			return AccountCenter.getManageUnit(manageUnit).getName();
@@ -136,6 +163,14 @@ public class UserRoleTokenEntity extends UserRoleToken{
 		this.lastIPAddress = lastIPAddress;
 	}
 	
+	public String getLastUserAgent() {
+		return lastUserAgent;
+	}
+
+	public void setLastUserAgent(String lastUserAgent) {
+		this.lastUserAgent = lastUserAgent;
+	}
+
 	public void setProperty(String nm,Object v){
 		if(properties == null){
 			properties = new ConcurrentHashMap<String,Object>();
@@ -144,8 +179,11 @@ public class UserRoleTokenEntity extends UserRoleToken{
 	}
 	
 	public Object getProperty(String nm){
+		
 		return getProperty(nm,false);
 	}
+	
+	
 	
 	public Object getProperty(String nm,boolean inherit){
 		Object val = null;
@@ -203,6 +241,12 @@ public class UserRoleTokenEntity extends UserRoleToken{
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	@Transient
+	public Map<String, Object> getProperties() {
+		return properties;
 	}
 	
 	

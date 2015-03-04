@@ -1,0 +1,4 @@
+public String get@{fieldName}Text(){
+	String key = (String)ConversionUtils.convert(($w)get@{fieldName}(),String.class);
+	return ((ctd.dictionary.Dictionary)DictionaryController.instance().get("@{dicId}")).getText(key);
+}

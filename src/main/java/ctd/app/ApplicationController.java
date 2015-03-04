@@ -1,14 +1,25 @@
 package ctd.app;
 
+import java.util.List;
+
 import ctd.app.loader.ApplicationLocalLoader;
+import ctd.app.updater.ApplicationUpdater;
 import ctd.controller.support.AbstractController;
 
 public class ApplicationController extends AbstractController<Application> {
 	private static ApplicationController instance;
 	
 	public ApplicationController(){
+		super();
 		setLoader(new ApplicationLocalLoader());
-		setNotifier(new ApplicationNotifier());
+		setUpdater(new ApplicationUpdater());
+
+		if(instance != null){
+			List<Application> loaded = instance.getCachedList();
+			for(Application t : loaded){
+				add(t);
+			}
+		}
 		instance = this;
 	}
 	

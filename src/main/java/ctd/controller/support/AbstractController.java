@@ -1,21 +1,46 @@
 package ctd.controller.support;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import ctd.controller.Configurable;
 import ctd.controller.ConfigurableLoader;
 import ctd.controller.Controller;
 import ctd.controller.exception.ControllerException;
-import ctd.controller.notifier.ConfigurableNotifier;
-import ctd.util.lock.KeyEntityRWLockManager;
+import ctd.controller.updater.ConfigurableUpdater;
 
 public abstract class AbstractController<T extends Configurable> implements Controller<T> {
-	protected final HashMap<String, T> store = new HashMap<String, T>();
+	protected LoadingCache<String, T> store;
 	protected ConfigurableLoader<T> loader;
-	protected ConfigurableNotifier notifier;
-	protected final KeyEntityRWLockManager lockManager = new KeyEntityRWLockManager();
+	protected ConfigurableUpdater<T> updater;
+	
+	public AbstractController(){
+		createCacheStore();
+	}
+	
+	protected void createCacheStore(){
+		store = CacheBuilder.newBuilder().build(createCacheLoader());
+	}
+	
+	protected CacheLoader<String,T> createCacheLoader(){
+		return new CacheLoader<String,T>(){
+			@Override
+			public T load(String id) throws Exception {
+				T t = loader.load(id);
+				if(!t.isInited()){
+					t.init();
+				}
+				return t;
+			}
+		};
+	}
 	
 	@Override
 	public void setLoader(ConfigurableLoader<T> loader){
@@ -27,40 +52,31 @@ public abstract class AbstractController<T extends Configurable> implements Cont
 		return loader;
 	}
 	
-	public void setNotifier(ConfigurableNotifier notifier){
-		this.notifier = notifier;
+	@Override
+	public ConfigurableUpdater<T> getUpdater(){
+		return updater;
 	}
 	
-	public ConfigurableNotifier getNotifier(){
-		return notifier;
+	@Override
+	public void setUpdater(ConfigurableUpdater<T> updater){
+		this.updater = updater;
 	}
 	
 	@Override
 	public boolean isLoaded(String id){
 		id = parseId(id);
-		
-		boolean isLocked = lockManager.tryReadLock(id);
-		try{
-			return store.containsKey(id);
-		}
-		finally{
-			if(isLocked){
-				lockManager.readUnlock(id);
-			}
-		}
+		return store.asMap().containsKey(id);
 	}
 	
 	@Override
 	public void reload(String id) {
 		id = parseId(id);
-		lockManager.writeLock(id);
-		store.remove(id);
-		lockManager.writeUnlock(id);
+		store.invalidate(id);
 	}
 	
 	@Override
 	public void reloadAll() {
-		String[] keys = store.keySet().toArray(new String[store.size()]);
+		Set<String> keys = store.asMap().keySet();
 		for(String id : keys){
 			reload(id);
 		}
@@ -72,62 +88,38 @@ public abstract class AbstractController<T extends Configurable> implements Cont
 	
 	@Override
 	public T get(String id) throws ControllerException {
-		id = parseId(id);
-		boolean isLocked = lockManager.tryReadLock(id);
-		T t = null;
-		try{
-			if(store.containsKey(id)){
-				t = store.get(id);
+		
+		try {
+			id = parseId(id);
+			T t = store.get(id);
+			return t;
+		} 
+		catch (ExecutionException e) {
+			Throwable cause = e.getCause(); 
+			if(cause instanceof ControllerException){
+				throw (ControllerException)cause;
 			}
-			if(t != null && t.isInited()){
-				return t;
-			}
-		}
-		finally{
-			if(isLocked){
-				lockManager.readUnlock(id);
+			else{
+				throw new ControllerException(cause);
 			}
 		}
 		
-		lockManager.writeLock(id);
-			try{
-				if(t == null){
-					if(store.containsKey(id)){
-						t = store.get(id);
-					}
-					else{
-						t = loader.load(id);
-						store.put(id, t);
-					}
-				}
-				if(!t.isInited()){
-					t.init();
-				}
-				return t;
-			}
-			finally{
-				lockManager.writeUnlock(id);
-			}
 	}
 	
 	@Override
 	public void add(T t){
-		lockManager.writeLock(t.getId());
 		store.put(t.getId(), t);
-		lockManager.writeUnlock(t.getId());
 	}
 	
 	@Override
 	public List<T> getCachedList(){
 		List<T> ls = new ArrayList<T>();
-		ls.addAll(store.values());
+		ls.addAll(store.asMap().values());
 		return ls;
 	}
 	
 	public void add(String id,T t){
-		lockManager.writeLock(t.getId());
 		store.put(id, t);
-		lockManager.writeUnlock(t.getId());
 	}
 	
 	public void setInitList(List<T> ls){

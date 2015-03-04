@@ -1,9 +1,8 @@
 package ctd.controller;
 
 import java.util.List;
-
 import ctd.controller.exception.ControllerException;
-import ctd.controller.notifier.ConfigurableNotifier;
+import ctd.controller.updater.ConfigurableUpdater;
 
 public interface Controller<T extends Configurable> {
 	public T get(String id) throws ControllerException;
@@ -13,7 +12,8 @@ public interface Controller<T extends Configurable> {
 	public void reloadAll();
 	public void setLoader(ConfigurableLoader<T> loader);
 	public ConfigurableLoader<T> getLoader();
-	public void setNotifier(ConfigurableNotifier notifier);
-	public ConfigurableNotifier getNotifier();
+	
+	public void setUpdater(ConfigurableUpdater<T> updater);
+	public ConfigurableUpdater<T> getUpdater();
 	public List<T> getCachedList();
 }

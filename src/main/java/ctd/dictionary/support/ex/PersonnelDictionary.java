@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -16,6 +18,7 @@ import ctd.account.tenant.Tenant;
 import ctd.account.tenant.TenantController;
 import ctd.controller.exception.ControllerException;
 import ctd.dictionary.DictionaryItem;
+import ctd.util.converter.ConversionUtils;
 
 
 public class PersonnelDictionary extends ManageUnitDictionary {
@@ -156,13 +159,28 @@ public class PersonnelDictionary extends ManageUnitDictionary {
 			String unitId = item.getProperty("manageUnit",String.class);
 			Element unitEl = (Element)doc.getRootElement().selectSingleNode("//unit[@id='" + unitId + "']");
 			if(unitEl != null){
-				Element staffEl = unitEl.addElement("employee");
-				staffEl.addAttribute("id", item.getKey());
-				staffEl.addAttribute("mCode",item.getMCode());
+				updateEmployeeElement(unitEl,item);
 			}
 		}
 		inited = true;
 	};
+	
+	private void updateEmployeeElement(Element unitEl,DictionaryItem item){
+		Element employeeEl = (Element) unitEl.selectSingleNode("employee[@id='" + item.getKey() +"']");
+		if(employeeEl == null){
+			employeeEl = unitEl.addElement("employee");
+			employeeEl.addAttribute("id", item.getKey());
+		}
+		employeeEl.addAttribute("mCode",item.getMCode());
+		Map<String,Object> properties = item.getProperties();
+		if(properties != null && !properties.isEmpty()){
+			Set<String> keys = properties.keySet();
+			for(String k : keys){
+				employeeEl.addAttribute(k,ConversionUtils.convert(properties.get(k),String.class));
+			}
+		}
+		
+	}
 	
 	private void onItemUpdate(DictionaryItem item){
 
@@ -171,17 +189,11 @@ public class PersonnelDictionary extends ManageUnitDictionary {
 			Document doc = tenant.getDefineDoc();
 			Element root = doc.getRootElement();
 			
-			Element staffEl = (Element)root.selectSingleNode("//employee[@id='" + item.getKey() +"']");
-			if(staffEl != null){
-				staffEl.getParent().remove(staffEl);
-			}
 			configDictionaryItem(item);
 			String unitId = item.getProperty("manageUnit",String.class);
 			Element unitEl = (Element)root.selectSingleNode("//unit[@id='" + unitId + "']");
 			if(unitEl != null){
-				staffEl = unitEl.addElement("employee");
-				staffEl.addAttribute("id", item.getKey());
-				staffEl.addAttribute("mCode",item.getMCode());
+				updateEmployeeElement(unitEl,item);
 			}
 		} 
 		catch (Exception e) {

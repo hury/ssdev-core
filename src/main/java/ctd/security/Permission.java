@@ -12,7 +12,7 @@ public class Permission implements Serializable{
 	public static final String PREFIX_USER = "u@";
 	public static final String PREFIX_ROLE = "r@";
 	public static final String PREFIX_TENANT = "t@";
-	public static final String OTHERS_PRINCIPAL = "$Others";
+	public static final String OTHERS_PRINCIPAL = "*";
 	
 	public static final Permission NegativePermission = new NegativePermission();
 	public static final Permission PositivePermission = new PositivePermission();

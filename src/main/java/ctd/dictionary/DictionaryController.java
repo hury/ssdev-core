@@ -3,13 +3,18 @@ package ctd.dictionary;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.TenantSupportController;
 import ctd.dictionary.loader.DictionaryLocalLoader;
+import ctd.dictionary.updater.DictionaryUpdater;
 
 public class DictionaryController extends TenantSupportController<Dictionary> {
 	private static DictionaryController instance;
 	
 	private DictionaryController(){
+		super();
 		setLoader(new DictionaryLocalLoader());
-		setNotifier(new DictionaryNotifier());
+		setUpdater(new DictionaryUpdater());
+		if(instance != null){
+			this.setInitList(instance.getCachedList());
+		}
 		instance = this;
 	}
 
@@ -22,24 +27,12 @@ public class DictionaryController extends TenantSupportController<Dictionary> {
 	
 	public void updateItem(String id,DictionaryItem item) throws ControllerException{
 		Dictionary d = get(id);
-		try{
-			lockManager.writeLock(id);
-			d.updateItem(item);
-		}
-		finally{
-			lockManager.writeUnlock(id);
-		}
+		d.updateItem(item);
 	}
 	
 	public void removeItem(String id,String key) throws ControllerException{
 		Dictionary d = get(id);
-		try{
-			lockManager.writeLock(id);
-			d.removeItem(key);
-		}
-		finally{
-			lockManager.writeUnlock(id);
-		}
+		d.removeItem(key);
 	}
 	
 	@Override
@@ -51,6 +44,7 @@ public class DictionaryController extends TenantSupportController<Dictionary> {
 			Dictionary dic = get(id);
 			if(dic.isReloadable()){
 				super.reload(id);
+				dic.destory();
 			}
 		} 
 		catch (ControllerException e) {

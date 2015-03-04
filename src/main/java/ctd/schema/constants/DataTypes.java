@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ctd.util.converter.ConversionUtils;
 

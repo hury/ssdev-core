@@ -3,14 +3,20 @@ package ctd.schema;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.AbstractController;
 import ctd.schema.loader.SchemaLocalLoader;
+import ctd.schema.updater.SchemaUpdater;
 
 
 public class SchemaController extends AbstractController<Schema> {
 	private static SchemaController instance;
 	
 	public SchemaController(){
+		super();
 		setLoader(new SchemaLocalLoader());
-		setNotifier(new SchemaNotifier());
+		setUpdater(new SchemaUpdater());
+
+		if(instance != null){
+			this.setInitList(instance.getCachedList());
+		}
 		instance = this;
 	}
 	
@@ -22,25 +28,12 @@ public class SchemaController extends AbstractController<Schema> {
 	}
 	
 	public void updateItem(String id,SchemaItem item) throws ControllerException{
-		
-		try{
-			Schema sc = get(id);
-			lockManager.writeLock(id);
-			sc.addItem(item);
-		}
-		finally{
-			lockManager.writeUnlock(id);
-		}
+		Schema sc = get(id);
+		sc.addItem(item);
 	}
 	
 	public void removeItem(String id,String itemId) throws ControllerException{
-		try{
-			Schema sc = get(id);
-			lockManager.writeLock(id);
-			sc.removeItem(itemId);
-		}
-		finally{
-			lockManager.writeUnlock(id);
-		}
+		Schema sc = get(id);
+		sc.removeItem(itemId);
 	}
 }

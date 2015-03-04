@@ -10,7 +10,6 @@ import ctd.app.ApplicationNode;
 import ctd.app.support.Action;
 import ctd.app.support.Category;
 import ctd.app.support.Module;
-import ctd.controller.Configurable;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.AbstractConfigurableLoader;
 import ctd.schema.constants.DataTypes;
@@ -68,16 +67,6 @@ public class ApplicationLocalLoader extends AbstractConfigurableLoader<Applicati
 		}
 	}
 	
-	
-	@SuppressWarnings("unchecked")
-	private void setupProperties(Configurable o,Element el){
-		List<Element> ls = el.selectNodes("properties/p");
-		for(Element p : ls){
-			String type = p.attributeValue("type","string");
-			Object v = DataTypes.toTypeValue(type, p.getTextTrim());
-			o.setProperty(p.attributeValue("name"), v);
-		}
-	}
 	
 	@SuppressWarnings("unchecked")
 	private void setupProperties(Module o,Element el){

@@ -2,6 +2,8 @@ package ctd.account;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
+
 import ctd.controller.exception.ControllerException;
 import ctd.util.context.Context;
 import ctd.util.context.ContextUtils;
@@ -16,6 +18,8 @@ public abstract class UserRoleToken implements Serializable{
 	public abstract String getUserId();
 	
 	public abstract String getUserName();
+	
+	public abstract Integer getUserAvatar();
 
 	public abstract String getRoleName();
 	
@@ -45,11 +49,10 @@ public abstract class UserRoleToken implements Serializable{
 	
 	public abstract <T> T getProperty(String nm,Class<T> targetType,boolean inherit);
 	
+	public abstract Map<String,Object> getProperties();
+	
 	public static UserRoleToken getCurrent(){
 		UserRoleToken ur = ContextUtils.get(Context.USER_ROLE_TOKEN,UserRoleToken.class);
-		if(ur == null){
-			throw new IllegalStateException("[$UserRoleToken] not exist in thread context");
-		}
 		return ur;
 	}
 	

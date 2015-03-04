@@ -12,7 +12,6 @@ import ctd.controller.exception.ControllerException;
 import ctd.dictionary.Dictionary;
 import ctd.dictionary.DictionaryController;
 import ctd.dictionary.support.ex.ManageUnitDictionary;
-import ctd.dictionary.support.ex.PersonnelDictionaryBuilder;
 import ctd.util.PyConverter;
 import ctd.util.converter.ConversionUtils;
 
@@ -88,9 +87,9 @@ public class TenantLocalLoader extends AbstractConfigurableLoader<Tenant> {
 		Dictionary dictionary = new ManageUnitDictionary(tenantId);
 		DictionaryController.instance().add(dictionary);
 
-		dictionary = PersonnelDictionaryBuilder.instance().createDictionary(tenantId);
-		if(dictionary != null){
-			DictionaryController.instance().add(dictionary);
-		}
+//		dictionary = PersonnelDictionaryBuilder.instance().createDictionary(tenantId);
+//		if(dictionary != null){
+//			DictionaryController.instance().add(dictionary);
+//		}
 	}
 }

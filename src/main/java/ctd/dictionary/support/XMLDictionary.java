@@ -39,12 +39,20 @@ public class XMLDictionary extends AbstractDictionary {
 	protected  void onItemUpdate(DictionaryItem item){
 		Element root = defineDoc.getRootElement();
 		Element el = (Element) root.selectSingleNode("//item[@key='" + item.getKey() + "']");
-		if(el != null){
-			el.getParent().remove(el);
-		}
-		else{
+		if(el == null){
 			el = DocumentHelper.createElement("item");
 			el.addAttribute("key", item.getKey());
+			String parentKey = item.getParent();
+			Element parentEl = null;
+			if(StringUtils.isEmpty(parentKey)){
+				parentEl = root;
+			}
+			else{
+				parentEl = (Element) root.selectSingleNode("//item[@key='" + parentKey + "']");
+			}
+			if(parentEl != null){
+				parentEl.add(el);
+			}
 		}
 		el.addAttribute("text",item.getText());
 		el.addAttribute("mCode", item.getMCode());
@@ -61,17 +69,7 @@ public class XMLDictionary extends AbstractDictionary {
 			}
 		}
 		
-		String parentKey = item.getParent();
-		Element parentEl = null;
-		if(StringUtils.isEmpty(parentKey)){
-			parentEl = root;
-		}
-		else{
-			parentEl = (Element) root.selectSingleNode("//item[@key='" + parentKey + "']");
-		}
-		if(parentEl != null){
-			parentEl.add(el);
-		}
+		
 	}
 	
 	@Override

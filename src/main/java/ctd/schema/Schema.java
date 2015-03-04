@@ -1,14 +1,16 @@
 package ctd.schema;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ctd.account.UserRoleToken;
 import ctd.controller.support.AbstractConfigurable;
 import ctd.schema.exception.ValidateException;
 import ctd.security.Condition;
+import ctd.security.Mode;
 import ctd.security.Permission;
 import ctd.security.Repository;
 import ctd.security.ResourceNode;
@@ -19,13 +21,15 @@ public class Schema extends AbstractConfigurable{
 	public static final String KEY_GEN_ASSIGN = "assign";
 	
 	private static final long serialVersionUID = -271602734048406147L;
-
+	private static final SchemaItemComparator schemaItemComparator = new SchemaItemComparator();
+	
+	private String annotationClass;
 	private String entityName;
 	private String alias;
 	private String key;
 	private String sortInfo;
 	private String keyGenerator;
-	private Map<String,SchemaItem> items = new LinkedHashMap<>();
+	private Map<String,SchemaItem> items = new ConcurrentHashMap<>();
 	
 	public Schema(){
 		
@@ -49,6 +53,7 @@ public class Schema extends AbstractConfigurable{
 	}
 
 	public void addItem(SchemaItem it){
+		it.setIndex(items.size());
 		items.put(it.getId(), it);
 	}
 
@@ -64,6 +69,7 @@ public class Schema extends AbstractConfigurable{
 	public List<SchemaItem> getItems(){
 		List<SchemaItem> beans = new ArrayList<SchemaItem>();
 		beans.addAll(items.values());
+		Collections.sort(beans, schemaItemComparator);
 		return beans;
 	}
 	
@@ -117,10 +123,22 @@ public class Schema extends AbstractConfigurable{
 	
 	public int getMode(){
 		ResourceNode node = Repository.getNode(id);
-		String principal = UserRoleToken.getCurrent().getRoleId();
+		UserRoleToken ur = UserRoleToken.getCurrent();
+		if(ur == null){
+			return Mode.NoneAccessMode.getValue();
+		}
+		String principal = ur.getRoleId();
 		return node.lookupPermission(principal).getMode().getValue();
 	}
 	
+	public String getAnnotationClass() {
+		return annotationClass;
+	}
+
+	public void setAnnotationClass(String annotationClass) {
+		this.annotationClass = annotationClass;
+	}
+
 	public Condition lookupCondition(String action){
 		ResourceNode node = Repository.getNode(id);
 		String principal = UserRoleToken.getCurrent().getRoleId();

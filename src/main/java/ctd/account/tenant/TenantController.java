@@ -3,6 +3,7 @@ package ctd.account.tenant;
 import org.apache.commons.lang3.StringUtils;
 
 import ctd.account.tenant.loader.TenantLocalLoader;
+import ctd.account.tenant.updater.TenantUpdater;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.support.TenantSupportController;
 
@@ -11,9 +12,14 @@ public class TenantController extends TenantSupportController<Tenant> {
 	private static TenantController instance;
 	
 	public TenantController(){
+		super();
 		setLoader(new TenantLocalLoader());
-		setNotifier(new TenantNotifier());
-		instance = this;
+		setUpdater(new TenantUpdater());
+		
+		if(instance != null){
+			this.setInitList(instance.getCachedList());
+		}
+		instance = this;	
 	}
 	
 	public static TenantController instance() {
@@ -35,7 +41,5 @@ public class TenantController extends TenantSupportController<Tenant> {
 		}
 		return target;
 	}
-
-
 
 }

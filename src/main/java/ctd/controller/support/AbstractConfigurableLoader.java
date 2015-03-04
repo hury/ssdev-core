@@ -2,15 +2,18 @@ package ctd.controller.support;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ResourceUtils;
 import ctd.controller.Configurable;
 import ctd.controller.ConfigurableLoader;
 import ctd.controller.exception.ControllerException;
 import ctd.resource.ResourceCenter;
+import ctd.schema.constants.DataTypes;
 import ctd.util.xml.XMLHelper;
 
 public abstract class AbstractConfigurableLoader<T extends Configurable> implements ConfigurableLoader<T> {
@@ -30,6 +33,7 @@ public abstract class AbstractConfigurableLoader<T extends Configurable> impleme
 		try {
 			Resource r = ResourceCenter.load(ResourceUtils.CLASSPATH_URL_PREFIX,path);
 			Document doc = XMLHelper.getDocument(ResourceCenter.getInputStream(r));
+			doc.getRootElement().addAttribute("path", r.getFile().getAbsolutePath());
 			return createInstanceFormDoc(id,doc,r.lastModified());
 		} 
 		catch (FileNotFoundException e) {
@@ -43,6 +47,16 @@ public abstract class AbstractConfigurableLoader<T extends Configurable> impleme
 		}
 		catch (Exception e) {
 			throw new ControllerException(e,"load file[" + path + "] unknow error.");
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void setupProperties(Configurable o,Element el){
+		List<Element> ls = el.selectNodes("properties/p");
+		for(Element p : ls){
+			String type = p.attributeValue("type","string");
+			Object v = DataTypes.toTypeValue(type, p.getTextTrim());
+			o.setProperty(p.attributeValue("name"), v);
 		}
 	}
 	

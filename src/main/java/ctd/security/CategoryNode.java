@@ -1,6 +1,7 @@
 package ctd.security;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import ctd.controller.Configurable;
 import ctd.controller.exception.ControllerException;
@@ -9,7 +10,7 @@ import ctd.util.converter.ConversionUtils;
 public class CategoryNode extends ResourceNode implements Configurable {
 	private static final long serialVersionUID = -3750355314383712048L;
 	private Long lastModi;
-	private HashMap<String,Object> properties = new HashMap<String,Object>();
+	private Map<String,Object> properties = new HashMap<String,Object>();
 	
 	public CategoryNode(){
 		super();
@@ -36,7 +37,7 @@ public class CategoryNode extends ResourceNode implements Configurable {
 	}
 	
 	@Override
-	public HashMap<String,Object> getProperties(){
+	public Map<String,Object> getProperties(){
 		if(properties.size() == 0){
 			return null;
 		}
@@ -70,7 +71,6 @@ public class CategoryNode extends ResourceNode implements Configurable {
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
 		
 	}
 

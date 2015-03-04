@@ -3,9 +3,10 @@ package ctd.app;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import ctd.account.UserRoleToken;
 import ctd.security.Permission;
 import ctd.security.Repository;
@@ -17,7 +18,7 @@ import ctd.util.context.ContextUtils;
 public abstract class ApplicationNode implements Serializable{
 	private static final long serialVersionUID = 5829201367508285016L;
 	protected ApplicationNode parent;
-	protected HashMap<String,ApplicationNode> items = new LinkedHashMap<String,ApplicationNode>();
+	protected Map<String,ApplicationNode> items = new LinkedHashMap<String,ApplicationNode>();
 	
 	protected String id;
 	protected String name;

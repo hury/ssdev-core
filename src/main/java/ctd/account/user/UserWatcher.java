@@ -1,10 +1,8 @@
 package ctd.account.user;
 
-
 import java.util.List;
 import java.util.Map;
 
-import ctd.account.UserRoleToken;
 import ctd.controller.exception.ControllerException;
 import ctd.controller.watcher.ConfigurableWatcher;
 import ctd.controller.watcher.WatcherTopics;
@@ -38,6 +36,7 @@ public class UserWatcher extends ConfigurableWatcher {
 	
 	@Override
 	public void onItemUpdate(String id,List<Object> updatedItems){
+		
 		if(controller == null || !controller.isLoaded(id)){
 			return;
 		}

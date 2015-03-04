@@ -9,12 +9,20 @@ import ctd.schema.support.ExpressionEvaluator;
 import ctd.schema.support.SequenceEvaluator;
 import ctd.sequence.Sequence;
 import ctd.sequence.SequenceManager;
-import ctd.sequence.SliceFactory;
 import ctd.sequence.exception.SequenceException;
+import ctd.sequence.slice.SliceFactory;
 import ctd.util.JSONUtils;
 
 public class EvaluatorFactory {
-
+	
+	@SuppressWarnings("unchecked")
+	public static ExpressionEvaluator newExpressionEvaluator(String expStr){
+		List<Object> exp = (List<Object>)JSONUtils.parse(expStr, List.class);
+		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		evaluator.setExp(exp);
+		return evaluator;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static Evaluator newInstance(Element setEl) throws EvaluatorException{
 		

@@ -39,7 +39,7 @@ public class DictionaryIndicator implements Serializable {
 		return slice;
 	}
 	
-	public void setSlice(Integer slice) {
+	public void setSlice(int slice) {
 		this.slice = slice;
 	}
 	
